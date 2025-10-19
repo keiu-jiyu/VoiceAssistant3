@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# 📊 检查服务状态
+# Usage: ./scripts/status.sh
+
+echo "📊 Service Status"
+echo "================================"
+
+# 检查 API 服务器
+API_PID=$(ps aux | grep "api.server" | grep -v grep | awk '{print \$2}')
+if [ -n "$API_PID" ]; then
+    echo "✅ API Server: Running (PID: $API_PID)"
+    echo "   URL: http://localhost:8000"
+else
+    echo "❌ API Server: Stopped"
+fi
+
+echo ""
+
+# 检查 Agent 服务
+AGENT_PID=$(ps aux | grep "agent.server" | grep -v grep | awk '{print \$2}')
+if [ -n "$AGENT_PID" ]; then
+    echo "✅ AI Agent: Running (PID: $AGENT_PID)"
+else
+    echo "❌ AI Agent: Stopped"
+fi
+
+echo "================================"
+
+# 检查端口占用
+if command -v lsof &> /dev/null; then
+    echo ""
+    echo "📡 Port Status:"
+    lsof -i :8000 2>/dev/null && echo "  Port 8000: In use" || echo "  Port 8000: Free"
+fi
